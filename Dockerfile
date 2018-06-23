@@ -10,7 +10,14 @@
 # Special attention is required to allow the container to access the USB device that is plugged into the host.
 # The container needs priviliged access to /dev/bus/usb on the host.
 # 
-# docker run --name rtl_433 -d -e MQTT_HOST=<mqtt-broker.example.com>   --privileged -v /dev/bus/usb:/dev/bus/usb  <image>
+# docker run \ 
+#     --name rtl_433 \
+#     -d \
+#     -e MQTT_HOST=<mqtt-broker.example.com> \
+#     -e MQTT_USER=<username> \
+#     -e MQTT_PASSWORD=<password> \
+#     --privileged -v /dev/bus/usb:/dev/bus/usb \
+#     <image>
 
 FROM ubuntu:16.04
 MAINTAINER Marco Verleun
@@ -28,7 +35,8 @@ RUN apt-get update && apt-get install -y \
   automake \
   libtool \
   cmake \
-  mosquitto-clients
+  mosquitto-clients \
+  jq
   
 #
 # Pull RTL_433 source code from GIT, compile it and install it
@@ -46,6 +54,8 @@ RUN git clone https://github.com/merbanan/rtl_433.git \
 # 
 # Use this variable when creating a container to specify the MQTT broker host.
 ENV MQTT_HOST=""
+ENV MQTT_USER=""
+ENV MQTT_PASSWORD=""
 
 #
 # When running a container this script will be executed

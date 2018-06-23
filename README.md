@@ -1,3 +1,3 @@
-# rtl2mqtt with Dockerfile
+# accurite-rtl433-to-mqtt with Dockerfile
 
-https://hub.docker.com/r/roflmao/rtl2mqtt/
+https://hub.docker.com/r/aleksandrsivanovs/accurite-rtl433-to-mqtt/

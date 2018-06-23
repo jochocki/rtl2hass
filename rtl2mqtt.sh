@@ -14,12 +14,12 @@ PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"
 #
 # Start the listener and enter an endless loop
 #
-/usr/local/bin/rtl_433 -F json |  while read line
+rtl_433 -R 40 -q  -F json|  while read line
 do
-# Log to file if file exists.
-# Create file with touch /tmp/rtl_433.log if logging is needed
-  [ -w /tmp/rtl_433.log ] && echo $line >> rtl_433.log
-
-# Raw message to MQTT
-  echo $line  | /usr/bin/mosquitto_pub -h $MQTT_HOST -i RTL_433 -l -t "RTL_433/Raw"
+	sensorId=$(echo $line | jq -r '.id')
+	temperature=$(echo $line | jq -r '.temperature_C')
+	humidity=$(echo $line | jq -r '.humidity')
+        mosquitto_pub -h $MQTT_HOST -u $MQTT_USER -P $MQTT_PASSWORD -d -t "home/sensors/$sensorId" -m "$line"  
+        mosquitto_pub -h $MQTT_HOST -u $MQTT_USER -P $MQTT_PASSWORD -d -t "home/sensors/$sensorId/temperature" -m "$temperature"       
+        mosquitto_pub -h $MQTT_HOST -u $MQTT_USER -P $MQTT_PASSWORD -d -t "home/sensors/$sensorId/humidity" -m "$humidity"
 done
