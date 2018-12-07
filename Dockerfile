@@ -20,9 +20,9 @@
 #     <image>
 
 FROM ubuntu:16.04
-MAINTAINER Marco Verleun
 
 LABEL Description="This image is used to start a script that will monitor for events on 433,92 Mhz" Vendor="MarCoach" Version="1.0"
+LABEL Maintainer="Jordan Ochocki"
 
 #
 # First install software packages needed to compile rtl_433 and to publish MQTT events
