@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
   librtlsdr0 \
   git \
   automake \
+  make \
   libtool \
   cmake \
   mosquitto-clients
