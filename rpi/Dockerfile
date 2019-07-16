@@ -29,7 +29,8 @@ RUN apt-get update && apt-get install -y \
   make \
   libtool \
   cmake \
-  mosquitto-clients
+  mosquitto-clients \
+  jq
   
 #
 # Pull RTL_433 source code from GIT, compile it and install it
