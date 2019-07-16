@@ -31,7 +31,17 @@ RUN apt-get update && apt-get install -y \
   cmake \
   mosquitto-clients \
   jq
-  
+
+#
+# Blacklist kernel modules for RTL devices
+#
+
+RUN echo 'blacklist rtl2832 \
+blacklist r820t \
+blacklist rtl12830 \
+blacklist dvb_usb_rtl128xxu' \
+> /etc/modprobe.d/rtl.blacklist.conf
+
 #
 # Pull RTL_433 source code from GIT, compile it and install it
 #
