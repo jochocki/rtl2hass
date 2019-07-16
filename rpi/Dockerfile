@@ -12,7 +12,7 @@
 # 
 # docker run --name rtl_433 -d -e MQTT_HOST=<mqtt-broker.example.com>   --privileged -v /dev/bus/usb:/dev/bus/usb  <image>
 
-FROM resin/rpi-raspbian
+FROM balenalib/rpi-raspbian
 
 LABEL Description="This image is used to start a script that will monitor for events on 433,92 Mhz" Vendor="MarCoach" Version="1.0"
 LABEL Maintainer="Jordan Ochocki"
