@@ -19,7 +19,7 @@ do
 	sensorId=$(echo $line | jq -r '.id')
 	temperature=$(echo $line | jq -r '.temperature_C')
 	humidity=$(echo $line | jq -r '.humidity')
-        mosquitto_pub -h $MQTT_HOST -u $MQTT_USER -P $MQTT_PASSWORD -d -t "home/sensors/$sensorId" -m "$line"  
-        mosquitto_pub -h $MQTT_HOST -u $MQTT_USER -P $MQTT_PASSWORD -d -t "home/sensors/$sensorId/temperature" -m "$temperature"       
-        mosquitto_pub -h $MQTT_HOST -u $MQTT_USER -P $MQTT_PASSWORD -d -t "home/sensors/$sensorId/humidity" -m "$humidity"
+        mosquitto_pub -h $MQTT_HOST -d -t "home/sensors/$sensorId" -m "$line"  
+        mosquitto_pub -h $MQTT_HOST -d -t "home/sensors/$sensorId/temperature" -m "$temperature"       
+        mosquitto_pub -h $MQTT_HOST -d -t "home/sensors/$sensorId/humidity" -m "$humidity"
 done
