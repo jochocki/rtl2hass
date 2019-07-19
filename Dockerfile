@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y \
 #
 # Install Paho-MQTT client
 #
+RUN pip install wheel
 RUN pip install paho-mqtt
 
 #
@@ -73,10 +74,9 @@ ENV DISCOVERY_INTERVAL = "600"  # Seconds before refreshing the discovery
 #
 # When running a container this script will be executed
 #
-ENTRYPOINT ["/scripts/rtl2mqtt_hass.sh"]
+ENTRYPOINT ["/scripts/rtl2mqtt_hass.py"]
 
 #
 # Copy my script and make it executable
 #
-COPY rtl2mqtt_hass.sh /scripts/rtl2mqtt_hass.sh
-RUN chmod +x /scripts/rtl2mqtt_hass.sh
+COPY rtl2mqtt_hass.py /scripts/rtl2mqtt_hass.py
