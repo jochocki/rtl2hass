@@ -33,6 +33,11 @@ RUN apt-get update && apt-get install -y \
   jq
 
 #
+# Install Paho-MQTT client
+#
+RUN pip install paho-mqtt
+
+#
 # Blacklist kernel modules for RTL devices
 #
 
@@ -57,20 +62,19 @@ RUN git clone https://github.com/merbanan/rtl_433.git \
 # Define an environment variable
 # 
 # Use this variable when creating a container to specify the MQTT broker host.
-ENV MQTT_HOST=""
+ENV MQTT_HOST = ""
+ENV MQTT_PORT = "1883"
+ENV MQTT_TOPIC = "rtl_433/+/events"
+ENV DISCOVERY_PREFIX = "homeassistant"
+ENV DISCOVERY_INTERVAL = "600"  # Seconds before refreshing the discovery
 
 #
 # When running a container this script will be executed
 #
-ENTRYPOINT ["/scripts/rtl2mqtt.sh"]
+ENTRYPOINT ["/scripts/rtl2mqtt_hass.sh"]
 
 #
 # Copy my script and make it executable
 #
-COPY rtl2mqtt.sh /scripts/rtl2mqtt.sh
-RUN chmod +x /scripts/rtl2mqtt.sh
-
-#
-# The script is in a volume. This makes changes persistent and allows you modify it.
-#
-VOLUME ["/scripts"]
+COPY rtl2mqtt_hass.sh /scripts/rtl2mqtt_hass.sh
+RUN chmod +x /scripts/rtl2mqtt_hass.sh
