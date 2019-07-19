@@ -31,12 +31,12 @@ RUN apt-get update && apt-get install -y \
   cmake \
   jq \
   python \
-  python-pip
+  python-pip \
+  python-setuptools
 
 #
 # Install Paho-MQTT client
 #
-RUN pip install --upgrade setuptools
 RUN pip install paho-mqtt
 
 #
