@@ -65,11 +65,11 @@ RUN git clone https://github.com/merbanan/rtl_433.git \
 # Define an environment variable
 # 
 # Use this variable when creating a container to specify the MQTT broker host.
-ENV MQTT_HOST = ""
-ENV MQTT_PORT = "1883"
-ENV MQTT_TOPIC = "rtl_433/+/events"
-ENV DISCOVERY_PREFIX = "homeassistant"
-ENV DISCOVERY_INTERVAL = "600"  # Seconds before refreshing the discovery
+ENV MQTT_HOST
+ENV MQTT_PORT 1883
+ENV MQTT_TOPIC rtl_433/+/events
+ENV DISCOVERY_PREFIX homeassistant
+ENV DISCOVERY_INTERVAL 600
 
 #
 # Copy my script
