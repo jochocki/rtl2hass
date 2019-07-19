@@ -20,11 +20,11 @@ import time
 import json
 import paho.mqtt.client as mqtt
 
-MQTT_HOST = os.environ['MQTT_HOST']
-MQTT_PORT = os.environ['MQTT_PORT']
-MQTT_TOPIC = os.environ['MQTT_TOPIC']
-DISCOVERY_PREFIX = os.environ['DISCOVERY_PREFIX']
-DISCOVERY_INTERVAL = os.environ['DISCOVERY_INTERVAL']
+MQTT_HOST = os.environ.get['MQTT_HOST']
+MQTT_PORT = os.environ.get['MQTT_PORT']
+MQTT_TOPIC = os.environ.get['MQTT_TOPIC']
+DISCOVERY_PREFIX = os.environ.get['DISCOVERY_PREFIX']
+DISCOVERY_INTERVAL = os.environ.get['DISCOVERY_INTERVAL']
 
 discovery_timeouts = {}
 
