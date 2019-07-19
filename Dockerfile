@@ -72,12 +72,15 @@ ENV DISCOVERY_PREFIX homeassistant
 ENV DISCOVERY_INTERVAL 600
 
 #
-# Copy my script
+# Copy scripts, make executable
 #
-COPY rtl2mqtt_hass.py /scripts/rtl2mqtt_hass.py
+COPY rtl_433_mqtt_hass.py /scripts/rtl_433_mqtt_hass.py
+COPY entry.sh /scripts/entry.sh
+
+RUN chmod +x /scripts/entry.sh
 
 #
-# Execute python script
+# Execute entry script
 #
 
-ENTRYPOINT [ "python", "/scripts/rtl2mqtt_hass.py" ]
+ENTRYPOINT [ "/scripts/entry.sh" ]
