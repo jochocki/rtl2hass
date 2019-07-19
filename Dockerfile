@@ -30,7 +30,8 @@ RUN apt-get update && apt-get install -y \
   libtool \
   cmake \
   mosquitto-clients \
-  jq
+  jq \
+  python
 
 #
 # Install Paho-MQTT client
