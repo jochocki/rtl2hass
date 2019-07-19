@@ -10,16 +10,9 @@
 # Special attention is required to allow the container to access the USB device that is plugged into the host.
 # The container needs priviliged access to /dev/bus/usb on the host.
 # 
-# docker run \ 
-#     --name rtl_433 \
-#     -d \
-#     -e MQTT_HOST=<mqtt-broker.example.com> \
-#     -e MQTT_USER=<username> \
-#     -e MQTT_PASSWORD=<password> \
-#     --privileged -v /dev/bus/usb:/dev/bus/usb \
-#     <image>
+# docker run --name rtl_433 -d -e MQTT_HOST=<mqtt-broker.example.com>   --privileged -v /dev/bus/usb:/dev/bus/usb  <image>
 
-FROM ubuntu:16.04
+FROM balenalib/rpi-raspbian
 
 LABEL Description="This image is used to start a script that will monitor for events on 433,92 Mhz" Vendor="MarCoach" Version="1.0"
 LABEL Maintainer="Jordan Ochocki"
@@ -33,11 +26,27 @@ RUN apt-get update && apt-get install -y \
   librtlsdr0 \
   git \
   automake \
+  make \
   libtool \
   cmake \
   mosquitto-clients \
   jq
-  
+
+#
+# Install Paho-MQTT client
+#
+RUN pip install paho-mqtt
+
+#
+# Blacklist kernel modules for RTL devices
+#
+
+RUN echo 'blacklist rtl2832 \
+blacklist r820t \
+blacklist rtl12830 \
+blacklist dvb_usb_rtl128xxu' \
+> /etc/modprobe.d/rtl.blacklist.conf
+
 #
 # Pull RTL_433 source code from GIT, compile it and install it
 #
@@ -53,22 +62,19 @@ RUN git clone https://github.com/merbanan/rtl_433.git \
 # Define an environment variable
 # 
 # Use this variable when creating a container to specify the MQTT broker host.
-ENV MQTT_HOST=""
-ENV MQTT_USER=""
-ENV MQTT_PASSWORD=""
+ENV MQTT_HOST = ""
+ENV MQTT_PORT = "1883"
+ENV MQTT_TOPIC = "rtl_433/+/events"
+ENV DISCOVERY_PREFIX = "homeassistant"
+ENV DISCOVERY_INTERVAL = "600"  # Seconds before refreshing the discovery
 
 #
 # When running a container this script will be executed
 #
-ENTRYPOINT ["/scripts/rtl2mqtt.sh"]
+ENTRYPOINT ["/scripts/rtl2mqtt_hass.sh"]
 
 #
 # Copy my script and make it executable
 #
-COPY rtl2mqtt.sh /scripts/rtl2mqtt.sh
-RUN chmod +x /scripts/rtl2mqtt.sh
-
-#
-# The script is in a volume. This makes changes persistent and allows you modify it.
-#
-VOLUME ["/scripts"]
+COPY rtl2mqtt_hass.sh /scripts/rtl2mqtt_hass.sh
+RUN chmod +x /scripts/rtl2mqtt_hass.sh
