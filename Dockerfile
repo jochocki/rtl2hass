@@ -80,4 +80,4 @@ COPY rtl2mqtt_hass.py /scripts/rtl2mqtt_hass.py
 # Execute python script
 #
 
-CMD [ "python", "/scripts/rtl2mqtt_hass.py" ]
+ENTRYPOINT [ "python", "/scripts/rtl2mqtt_hass.py" ]
