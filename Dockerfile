@@ -72,11 +72,12 @@ ENV DISCOVERY_PREFIX = "homeassistant"
 ENV DISCOVERY_INTERVAL = "600"  # Seconds before refreshing the discovery
 
 #
-# When running a container this script will be executed
-#
-ENTRYPOINT ["/scripts/rtl2mqtt_hass.py"]
-
-#
-# Copy my script and make it executable
+# Copy my script
 #
 COPY rtl2mqtt_hass.py /scripts/rtl2mqtt_hass.py
+
+#
+# Execute python script
+#
+
+CMD [ "python", "/scripts/rtl2mqtt_hass.py" ]
