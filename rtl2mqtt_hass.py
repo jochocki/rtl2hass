@@ -14,10 +14,17 @@
 from __future__ import print_function
 from __future__ import with_statement
 
+import os
 import socket
 import time
 import json
 import paho.mqtt.client as mqtt
+
+MQTT_HOST = os.environ['MQTT_HOST']
+MQTT_PORT = os.environ['MQTT_PORT']
+MQTT_TOPIC = os.environ['MQTT_TOPIC']
+DISCOVERY_PREFIX = os.environ['DISCOVERY_PREFIX']
+DISCOVERY_INTERVAL = os.environ['DISCOVERY_INTERVAL']
 
 discovery_timeouts = {}
 
