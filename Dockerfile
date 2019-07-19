@@ -36,6 +36,7 @@ RUN apt-get update && apt-get install -y \
 #
 # Install Paho-MQTT client
 #
+RUN pip install --upgrade setuptools
 RUN pip install paho-mqtt
 
 #
