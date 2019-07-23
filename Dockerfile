@@ -30,7 +30,7 @@ ENV DISCOVERY_INTERVAL 600
 #
 # First install software packages needed to compile RTL-SDR and rtl_433
 #
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
   git \
   libtool \
   libusb-1.0.0-dev \
@@ -41,7 +41,8 @@ RUN apt-get update && apt-get install -y \
   cmake \
   pkg-config \
   python \
-  python-pip
+  python-pip \
+  && rm -rf /var/lib/apt/lists/*
 
 #
 # Install Paho-MQTT client
@@ -70,6 +71,17 @@ COPY rtl.blacklist.conf /etc/modprobe.d/rtl.blacklist.conf
 #
 COPY entry.sh rtl_433_mqtt_hass.py /scripts/
 RUN chmod +x /scripts/entry.sh
+
+#
+# Cleanup
+#
+RUN apt-get remove --purge \
+  git \
+  build-essential \
+  autoconf \
+  cmake \
+  pkg-config \
+  && rm -r ~/rtl_433
 
 #
 # Execute entry script
