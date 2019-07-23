@@ -20,11 +20,15 @@ import time
 import json
 import paho.mqtt.client as mqtt
 
-MQTT_HOST = os.environ["MQTT_HOST"]
-MQTT_PORT = os.environ["MQTT_PORT"]
-MQTT_TOPIC = os.environ["MQTT_TOPIC"]
-DISCOVERY_PREFIX = os.environ["DISCOVERY_PREFIX"]
-DISCOVERY_INTERVAL = os.environ["DISCOVERY_INTERVAL"]
+MQTT_HOST = os.environ['MQTT_HOST']
+MQTT_PORT = os.environ['MQTT_PORT']
+MQTT_TOPIC = os.environ['MQTT_TOPIC']
+DISCOVERY_PREFIX = os.environ['DISCOVERY_PREFIX']
+DISCOVERY_INTERVAL = os.environ['DISCOVERY_INTERVAL']
+
+# Convert number environment variables to int
+MQTT_PORT = int(MQTT_PORT)
+DISCOVERY_INTERVAL = int(DISCOVERY_INTERVAL)
 
 discovery_timeouts = {}
 
@@ -263,6 +267,7 @@ def publish_config(mqttc, topic, model, instance, mapping):
 
     config = mapping["config"].copy()
     config["state_topic"] = topic
+    config["name"] = object_id
 
     mqttc.publish(path, json.dumps(config))
     print(path, " : ", json.dumps(config))
@@ -276,12 +281,12 @@ def bridge_event_to_hass(mqttc, topic, data):
         return
     model = sanitize(data["model"])
 
-    if "channel" in data:
-        channel = str(data["channel"])
-        instance = channel
-    elif "id" in data:
+    if "id" in data:
         device_id = str(data["id"])
         instance = device_id
+    elif "channel" in data:
+        channel = str(data["channel"])
+        instance = channel
     if not instance:
         # no unique device identifier
         return

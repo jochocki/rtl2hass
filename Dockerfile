@@ -12,7 +12,7 @@
 # 
 # docker run --name rtl_433 -d -e MQTT_HOST=<mqtt-broker.example.com>   --privileged -v /dev/bus/usb:/dev/bus/usb  <image>
 
-FROM python:2.7-alpine
+FROM debian:stretch
 
 LABEL Description="This image is used to start a script that will monitor for events on 433,92 Mhz" Vendor="MarCoach" Version="1.0"
 LABEL Maintainer="Jordan Ochocki"
@@ -30,33 +30,23 @@ ENV DISCOVERY_INTERVAL 600
 #
 # First install software packages needed to compile RTL-SDR and rtl_433
 #
-RUN apk update && apk add --no-cache \
+RUN apt-get update && apt-get install -y \
   git \
-  musl-dev \
-  gcc \
-  make \
+  libtool \
+  libusb-1.0.0-dev \
+  librtlsdr-dev \
+  rtl-sdr \
+  build-essential \
+  autoconf \
   cmake \
-  pkgconf \
-  libusb-dev
-#  automake \
-#  libtool \
+  pkg-config \
+  python \
+  python-pip
 
 #
 # Install Paho-MQTT client
 #
 RUN pip install paho-mqtt
-
-#
-# Pull RTL-SDR source code from GIT, compile it and install it
-#
-WORKDIR ~/
-RUN git clone git://git.osmocom.org/rtl-sdr.git \
-  && cd rtl-sdr/ \
-  && mkdir build \
-  && cd build \
-  && cmake ../ -DDETACH_KERNEL_DRIVER=ON \
-  && make \
-  && make install
 
 #
 # Pull RTL_433 source code from GIT, compile it and install it
@@ -78,9 +68,7 @@ COPY rtl.blacklist.conf /etc/modprobe.d/rtl.blacklist.conf
 #
 # Copy scripts, make executable
 #
-COPY rtl_433_mqtt_hass.py /scripts/rtl_433_mqtt_hass.py
-COPY entry.sh /scripts/entry.sh
-
+COPY entry.sh rtl_433_mqtt_hass.py /scripts/
 RUN chmod +x /scripts/entry.sh
 
 #

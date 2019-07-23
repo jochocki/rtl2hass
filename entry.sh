@@ -1,2 +1,2 @@
 #!/bin/sh
-rtl_433 -F json | python /scripts/rtl_433_mqtt_hass.py
+rtl_433 -F mqtt://mqtt.ad.ochocki.org -M utc | python /scripts/rtl_433_mqtt_hass.py
