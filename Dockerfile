@@ -41,6 +41,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   cmake \
   pkg-config \
   python \
+  python-setuptools \
+  python-wheel \
   python-pip \
   && rm -rf /var/lib/apt/lists/*
 
@@ -75,13 +77,14 @@ RUN chmod +x /scripts/entry.sh
 #
 # Cleanup
 #
-RUN apt-get remove --purge \
+RUN apt-get purge -y \
   git \
   build-essential \
   autoconf \
   cmake \
   pkg-config \
-  && rm -r ~/rtl_433
+  && apt-get autoremove -y \
+  && rm -r /~/rtl_433
 
 #
 # Execute entry script
