@@ -301,6 +301,7 @@ def bridge_event_to_hass(mqttc, topic, data):
 
 def rtl_433_bridge():
     """Run a MQTT Home Assistant auto discovery bridge for rtl_433."""
+    mqttc.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
     mqttc = mqtt.Client()
     mqttc.on_connect = mqtt_connect
     mqttc.on_disconnect = mqtt_disconnect
