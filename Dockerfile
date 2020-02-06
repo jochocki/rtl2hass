@@ -65,6 +65,8 @@ FROM debian:stretch AS final
 # Use this variable when creating a container to specify the MQTT broker host.
 ENV MQTT_HOST ""
 ENV MQTT_PORT 1883
+ENV MQTT_USERNAME ""
+ENV MQTT_PASSWORD ""
 ENV MQTT_TOPIC rtl_433/+/events
 ENV DISCOVERY_PREFIX homeassistant
 ENV DISCOVERY_INTERVAL 600
