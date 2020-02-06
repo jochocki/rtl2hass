@@ -22,6 +22,8 @@ import paho.mqtt.client as mqtt
 
 MQTT_HOST = os.environ['MQTT_HOST']
 MQTT_PORT = os.environ['MQTT_PORT']
+MQTT_USERNAME = os.environ['MQTT_USERNAME']
+MQTT_PASSWORD = os.environ['MQTT_PASSWORD']
 MQTT_TOPIC = os.environ['MQTT_TOPIC']
 DISCOVERY_PREFIX = os.environ['DISCOVERY_PREFIX']
 DISCOVERY_INTERVAL = os.environ['DISCOVERY_INTERVAL']
@@ -300,6 +302,7 @@ def bridge_event_to_hass(mqttc, topic, data):
 def rtl_433_bridge():
     """Run a MQTT Home Assistant auto discovery bridge for rtl_433."""
     mqttc = mqtt.Client()
+    mqttc.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
     mqttc.on_connect = mqtt_connect
     mqttc.on_disconnect = mqtt_disconnect
     mqttc.on_message = mqtt_message
