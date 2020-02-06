@@ -44,6 +44,8 @@ See https://www.home-assistant.io/docs/mqtt/discovery/
 ```
 MQTT_HOST
 MQTT_PORT (default value: 1883)
+MQTT_USERNAME (if required)
+MQTT_PASSWORD (if required)
 MQTT_TOPIC (default value: rtl_433/+/events)
 DISCOVERY_PREFIX (default value: homeassistant)
 DISCOVERY_INTERVAL (default value: 600)
