@@ -37,7 +37,7 @@ discovery_timeouts = {}
 mappings = {
     "temperature_C": {
         "device_type": "sensor",
-        "object_suffix": "T",
+        "object_suffix": "Temperature",
         "config": {
             "device_class": "temperature",
             "name": "Temperature",
@@ -47,7 +47,7 @@ mappings = {
     },
     "temperature_1_C": {
         "device_type": "sensor",
-        "object_suffix": "T1",
+        "object_suffix": "Temperature 1",
         "config": {
             "device_class": "temperature",
             "name": "Temperature 1",
@@ -57,7 +57,7 @@ mappings = {
     },
     "temperature_2_C": {
         "device_type": "sensor",
-        "object_suffix": "T2",
+        "object_suffix": "Temperature 2",
         "config": {
             "device_class": "temperature",
             "name": "Temperature 2",
@@ -67,7 +67,7 @@ mappings = {
     },
     "temperature_F": {
         "device_type": "sensor",
-        "object_suffix": "F",
+        "object_suffix": "Temperature",
         "config": {
             "device_class": "temperature",
             "name": "Temperature",
@@ -78,7 +78,7 @@ mappings = {
 
     "battery_ok": {
         "device_type": "sensor",
-        "object_suffix": "B",
+        "object_suffix": "Battery",
         "config": {
             "device_class": "battery",
             "name": "Battery",
@@ -89,7 +89,7 @@ mappings = {
 
     "humidity": {
         "device_type": "sensor",
-        "object_suffix": "H",
+        "object_suffix": "Humidity",
         "config": {
             "device_class": "humidity",
             "name": "Humidity",
@@ -100,7 +100,7 @@ mappings = {
 
     "moisture": {
         "device_type": "sensor",
-        "object_suffix": "H",
+        "object_suffix": "Moisture",
         "config": {
             "device_class": "moisture",
             "name": "Moisture",
@@ -111,7 +111,7 @@ mappings = {
 
     "pressure_hPa": {
         "device_type": "sensor",
-        "object_suffix": "P",
+        "object_suffix": "Pressure",
         "config": {
             "device_class": "pressure",
             "name": "Pressure",
@@ -243,6 +243,7 @@ def mqtt_message(client, userdata, msg):
 def sanitize(text):
     """Sanitize a name for Graphite/MQTT use."""
     return (text
+            .replace("-", "_")
             .replace(" ", "_")
             .replace("/", "_")
             .replace(".", "_")
@@ -254,10 +255,10 @@ def publish_config(mqttc, topic, model, instance, mapping):
     global discovery_timeouts
 
     device_type = mapping["device_type"]
+    object_id = "_".join([model, instance])
     object_suffix = mapping["object_suffix"]
-    object_id = "-".join([model, instance, object_suffix])
 
-    path = "/".join([DISCOVERY_PREFIX, device_type, object_id, "config"])
+    path = "/".join([DISCOVERY_PREFIX, device_type, object_id, object_suffix, "config"])
 
     # check timeout
     now = time.time()
@@ -267,10 +268,17 @@ def publish_config(mqttc, topic, model, instance, mapping):
 
     discovery_timeouts[path] = now + DISCOVERY_INTERVAL
 
+    # add Home Assistant device info
+    device = {}
+    device["identifiers"] = instance
+    device["name"] = " ".join([model.replace("_", " "), instance])
+
     config = mapping["config"].copy()
     config["state_topic"] = topic
-    config["name"] = object_id
-
+    config["name"] = " ".join([model.replace("_", " "), instance, object_suffix])
+    config["unique_id"] = "".join(["rtl433", device_type, instance, object_suffix])
+    config["device"] = device
+    
     mqttc.publish(path, json.dumps(config))
     print(path, " : ", json.dumps(config))
 
