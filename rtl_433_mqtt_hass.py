@@ -220,7 +220,7 @@ def mqtt_connect(client, userdata, flags, rc):
     if rc != 0:
         print("Could not connect. Error: " + str(rc))
     else:
-        client.subscribe(MQTT_TOPIC)
+        client.subscribe("/".join([MQTT_TOPIC, "events"]))
 
 
 def mqtt_disconnect(client, userdata, rc):
