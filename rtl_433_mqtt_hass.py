@@ -35,6 +35,23 @@ DISCOVERY_INTERVAL = int(DISCOVERY_INTERVAL)
 discovery_timeouts = {}
 
 mappings = {
+    "protocol": {
+        "device_type": "sensor",
+        "object_suffix": "Protocol",
+        "config": {
+            "name": "Protocol",
+#            "value_template": "{{ value_json.protocol }}"
+        }
+    },
+    "rssi": {
+        "device_type": "sensor",
+        "object_suffix": "RSSI",
+        "config": {
+            "name": "RSSI",
+            "unit_of_measurement": "dB",
+#            "value_template": "{{ value_json.rssi }}"
+        }
+    },
     "temperature_C": {
         "device_type": "sensor",
         "object_suffix": "Temperature",
@@ -42,7 +59,7 @@ mappings = {
             "device_class": "temperature",
             "name": "Temperature",
             "unit_of_measurement": "°C",
-            "value_template": "{{ value_json.temperature_C }}"
+#            "value_template": "{{ value_json.temperature_C }}"
         }
     },
     "temperature_1_C": {
@@ -83,7 +100,7 @@ mappings = {
             "device_class": "battery",
             "name": "Battery",
             "unit_of_measurement": "%",
-            "value_template": "{{ float(value_json.battery_ok) * 99 + 1 }}"
+#            "value_template": "{{ float(value_json.battery_ok) * 99 + 1 }}"
         }
     },
 
@@ -94,7 +111,7 @@ mappings = {
             "device_class": "humidity",
             "name": "Humidity",
             "unit_of_measurement": "%",
-            "value_template": "{{ value_json.humidity }}"
+#            "value_template": "{{ value_json.humidity }}"
         }
     },
 
@@ -243,19 +260,18 @@ def mqtt_message(client, userdata, msg):
 def sanitize(text):
     """Sanitize a name for Graphite/MQTT use."""
     return (text
-            .replace("-", "_")
             .replace(" ", "_")
             .replace("/", "_")
             .replace(".", "_")
             .replace("&", ""))
 
 
-def publish_config(mqttc, topic, model, instance, mapping):
+def publish_config(mqttc, topic, model, instance, channel, mapping):
     """Publish Home Assistant auto discovery data."""
     global discovery_timeouts
 
     device_type = mapping["device_type"]
-    object_id = "_".join([model, instance])
+    object_id = "_".join([model.replace("-", "_"), instance])
     object_suffix = mapping["object_suffix"]
 
     path = "/".join([DISCOVERY_PREFIX, device_type, object_id, object_suffix, "config"])
@@ -271,10 +287,11 @@ def publish_config(mqttc, topic, model, instance, mapping):
     # add Home Assistant device info
     device = {}
     device["identifiers"] = instance
-    device["name"] = " ".join([model.replace("_", " "), instance])
+    device["name"] = instance
+    device["model"] = model.replace("_", " ")
 
     config = mapping["config"].copy()
-    config["state_topic"] = topic
+    config["state_topic"] = "/".join([MQTT_TOPIC, model, instance, channel, topic])
     config["name"] = " ".join([model.replace("_", " "), instance, object_suffix])
     config["unique_id"] = "".join(["rtl433", device_type, instance, object_suffix])
     config["device"] = device
@@ -294,17 +311,20 @@ def bridge_event_to_hass(mqttc, topic, data):
     if "id" in data:
         device_id = str(data["id"])
         instance = device_id
-    elif "channel" in data:
-        channel = str(data["channel"])
-        instance = channel
+#    elif "channel" in data:
+#        channel = str(data["channel"])
+#        instance = channel
     if not instance:
         # no unique device identifier
         return
 
+    if "channel" in data:
+        channel = str(data["channel"])
+
     # detect known attributes
     for key in data.keys():
         if key in mappings:
-            publish_config(mqttc, topic, model, instance, mappings[key])
+            publish_config(mqttc, key, model, instance, channel, mappings[key])
 
 
 def rtl_433_bridge():
