@@ -295,6 +295,7 @@ def publish_config(mqttc, topic, model, instance, channel, mapping):
     config["state_topic"] = "/".join([MQTT_TOPIC, model, instance, channel, topic])
     config["name"] = " ".join([model.replace("_", " "), instance, object_suffix])
     config["unique_id"] = "".join(["rtl433", device_type, instance, object_suffix])
+    config["availability_topic"] = "/".join([MQTT_TOPIC, "status"])
     config["device"] = device
     
     mqttc.publish(path, json.dumps(config))
