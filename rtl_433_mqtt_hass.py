@@ -285,17 +285,23 @@ def publish_config(mqttc, topic, model, instance, channel, mapping):
 
     discovery_timeouts[path] = now + DISCOVERY_INTERVAL
 
-    # add Home Assistant device info
-    device = {}
-    device["identifiers"] = instance
-    device["name"] = instance
-    device["model"] = model.replace("_", " ")
+
 
     config = mapping["config"].copy()
     config["state_topic"] = "/".join([MQTT_TOPIC, model, instance, channel, topic])
-    config["name"] = " ".join([model.replace("_", " "), instance, object_suffix])
+    config["name"] = " ".join([model.replace("-", " "), instance, object_suffix])
     config["unique_id"] = "".join(["rtl433", device_type, instance, object_suffix])
     config["availability_topic"] = "/".join([MQTT_TOPIC, "status"])
+
+    # add Home Assistant device info
+
+    manufacturer,model = model.split("-", 1)
+
+    device = {}
+    device["identifiers"] = instance
+    device["name"] = instance
+    device["manufacturer"] = manufacturer
+    device["model"] = model
     config["device"] = device
     
     mqttc.publish(path, json.dumps(config))
@@ -311,11 +317,7 @@ def bridge_event_to_hass(mqttc, topic, data):
     model = sanitize(data["model"])
 
     if "id" in data:
-        device_id = str(data["id"])
-        instance = device_id
-#    elif "channel" in data:
-#        channel = str(data["channel"])
-#        instance = channel
+        instance = str(data["id"])
     if not instance:
         # no unique device identifier
         return
