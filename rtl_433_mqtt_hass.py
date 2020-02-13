@@ -234,6 +234,7 @@ mappings = {
 def mqtt_connect(client, userdata, flags, rc):
     """Callback for MQTT connects."""
     print("MQTT connected: " + mqtt.connack_string(rc))
+    client.publish("/".join([MQTT_TOPIC, "status"]), payload="online", qos=0, retain=True)
     if rc != 0:
         print("Could not connect. Error: " + str(rc))
     else:
@@ -334,6 +335,7 @@ def rtl_433_bridge():
     mqttc.on_connect = mqtt_connect
     mqttc.on_disconnect = mqtt_disconnect
     mqttc.on_message = mqtt_message
+    mqttc.will_set("/".join([MQTT_TOPIC, "status"]), payload="offline", qos=0, retain=True)
     mqttc.connect_async(MQTT_HOST, MQTT_PORT, 60)
     mqttc.loop_start()
 
