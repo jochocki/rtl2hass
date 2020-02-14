@@ -13,10 +13,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   autoconf \
   cmake \
   pkg-config \
-  python \
-  python-setuptools \
-  python-wheel \
-  python-pip \
   && rm -rf /var/lib/apt/lists/*
 
 #
@@ -52,10 +48,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   libusb-1.0.0-dev \
   librtlsdr-dev \
   rtl-sdr \
-  python \
-  python-setuptools \
-  python-wheel \
-  python-pip \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=intermediate /usr/local/include/rtl_433.h /usr/local/include/rtl_433.h
@@ -66,7 +58,7 @@ COPY --from=intermediate /usr/local/etc/rtl_433 /usr/local/etc/rtl_433
 #
 # Install Paho-MQTT client
 #
-RUN pip install paho-mqtt
+RUN pip3 install paho-mqtt
 
 #
 # Blacklist kernel modules for RTL devices
