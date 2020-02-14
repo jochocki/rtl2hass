@@ -285,8 +285,6 @@ def publish_config(mqttc, topic, manmodel, instance, channel, mapping):
 
     discovery_timeouts[path] = now + DISCOVERY_INTERVAL
 
-
-
     config = mapping["config"].copy()
     config["state_topic"] = "/".join([MQTT_TOPIC, manmodel, instance, channel, topic])
     config["name"] = " ".join([manmodel.replace("-", " "), instance, object_suffix])
