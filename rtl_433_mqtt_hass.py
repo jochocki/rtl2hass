@@ -267,12 +267,12 @@ def sanitize(text):
             .replace("&", ""))
 
 
-def publish_config(mqttc, topic, model, instance, channel, mapping):
+def publish_config(mqttc, topic, manmodel, instance, channel, mapping):
     """Publish Home Assistant auto discovery data."""
     global discovery_timeouts
 
     device_type = mapping["device_type"]
-    object_id = "_".join([model.replace("-", "_"), instance])
+    object_id = "_".join([manmodel.replace("-", "_"), instance])
     object_suffix = mapping["object_suffix"]
 
     path = "/".join([DISCOVERY_PREFIX, device_type, object_id, object_suffix, "config"])
@@ -288,14 +288,14 @@ def publish_config(mqttc, topic, model, instance, channel, mapping):
 
 
     config = mapping["config"].copy()
-    config["state_topic"] = "/".join([MQTT_TOPIC, model, instance, channel, topic])
-    config["name"] = " ".join([model.replace("-", " "), instance, object_suffix])
+    config["state_topic"] = "/".join([MQTT_TOPIC, manmodel, instance, channel, topic])
+    config["name"] = " ".join([manmodel.replace("-", " "), instance, object_suffix])
     config["unique_id"] = "".join(["rtl433", device_type, instance, object_suffix])
     config["availability_topic"] = "/".join([MQTT_TOPIC, "status"])
 
     # add Home Assistant device info
 
-    manufacturer,model = model.split("-", 1)
+    manufacturer,model = manmodel.split("-", 1)
 
     device = {}
     device["identifiers"] = instance
@@ -314,7 +314,7 @@ def bridge_event_to_hass(mqttc, topic, data):
     if "model" not in data:
         # not a device event
         return
-    model = sanitize(data["model"])
+    manmodel = sanitize(data["model"])
 
     if "id" in data:
         instance = str(data["id"])
@@ -328,7 +328,7 @@ def bridge_event_to_hass(mqttc, topic, data):
     # detect known attributes
     for key in data.keys():
         if key in mappings:
-            publish_config(mqttc, key, model, instance, channel, mappings[key])
+            publish_config(mqttc, key, manmodel, instance, channel, mappings[key])
 
 
 def rtl_433_bridge():
