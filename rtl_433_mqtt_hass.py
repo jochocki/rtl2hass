@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf-8
 
 """MQTT Home Assistant auto discovery for rtl_433 events."""
@@ -298,8 +298,8 @@ def publish_config(mqttc, topic, manmodel, instance, channel, mapping):
     device = {}
     device["identifiers"] = instance
     device["name"] = instance
-    device["manufacturer"] = manufacturer
     device["model"] = model
+    device["manufacturer"] = manufacturer
     config["device"] = device
     
     mqttc.publish(path, json.dumps(config))

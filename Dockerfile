@@ -1,4 +1,4 @@
-FROM debian:stretch AS intermediate
+FROM python:3 AS intermediate
 
 #
 # First install software packages needed to compile RTL-SDR and rtl_433
@@ -33,7 +33,7 @@ RUN git clone https://github.com/merbanan/rtl_433.git . \
 
 
 # Final image build
-FROM debian:stretch AS final
+FROM python:3 AS final
 
 #
 # Define environment variables
