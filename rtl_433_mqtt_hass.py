@@ -302,7 +302,7 @@ def publish_config(mqttc, topic, manmodel, instance, channel, mapping):
     device["manufacturer"] = manufacturer
     config["device"] = device
     
-    mqttc.publish(path, json.dumps(config))
+    mqttc.publish(path, json.dumps(config), retain=True)
     print(path, " : ", json.dumps(config))
 
 
