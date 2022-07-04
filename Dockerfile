@@ -1,25 +1,23 @@
-FROM python:3 AS intermediate
+FROM python:3-alpine AS intermediate 
+
+WORKDIR /rtl_433 
 
 #
 # First install software packages needed to compile RTL-SDR and rtl_433
 #
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN apk add --update-cache \
   git \
   libtool \
-  libusb-1.0.0-dev \
+  libusb-dev \
   librtlsdr-dev \
   rtl-sdr \
-  build-essential \
+  g++ \
   autoconf \
   cmake \
-  pkg-config \
-  && rm -rf /var/lib/apt/lists/*
-
-#
-# Pull RTL_433 source code from GIT, compile it and install it
-#
-WORKDIR /rtl_433 
-RUN git clone https://github.com/merbanan/rtl_433.git . \
+  make \
+  pkgconfig \
+  && rm -rf /var/lib/apt/lists/* \
+  && git clone https://github.com/merbanan/rtl_433.git . \
   && mkdir build \
   && cd build \
   && cmake ../ \
@@ -27,38 +25,32 @@ RUN git clone https://github.com/merbanan/rtl_433.git . \
   && make install
 
 
-
 # Final image build
-FROM python:3 AS final
+FROM python:3-alpine AS final
 
 #
 # Define environment variables
 # 
 # Use this variable when creating a container to specify the MQTT broker host.
-ENV MQTT_HOST ""
-ENV MQTT_PORT 1883
-ENV MQTT_USERNAME ""
-ENV MQTT_PASSWORD ""
-ENV MQTT_TOPIC rtl_433
-ENV DISCOVERY_PREFIX homeassistant
-ENV DISCOVERY_INTERVAL 600
+ENV MQTT_HOST "" \
+    MQTT_PORT 1883 \
+    MQTT_USERNAME "" \
+    MQTT_PASSWORD "" \
+    MQTT_TOPIC rtl_433 \
+    DISCOVERY_PREFIX homeassistant \
+    DISCOVERY_INTERVAL 600
 
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN apk add --update-cache \
   libtool \
-  libusb-1.0.0-dev \
+  libusb-dev \
   librtlsdr-dev \
   rtl-sdr \
-  && rm -rf /var/lib/apt/lists/*
+  && pip3 install paho-mqtt
 
 COPY --from=intermediate /usr/local/include/rtl_433.h /usr/local/include/rtl_433.h
 COPY --from=intermediate /usr/local/include/rtl_433_devices.h /usr/local/include/rtl_433_devices.h
 COPY --from=intermediate /usr/local/bin/rtl_433 /usr/local/bin/rtl_433
 COPY --from=intermediate /usr/local/etc/rtl_433 /usr/local/etc/rtl_433
-
-#
-# Install Paho-MQTT client
-#
-RUN pip3 install paho-mqtt
 
 #
 # Blacklist kernel modules for RTL devices
@@ -75,3 +67,4 @@ RUN chmod +x /scripts/entry.sh
 # Execute entry script
 #
 ENTRYPOINT [ "/scripts/entry.sh" ]
+
